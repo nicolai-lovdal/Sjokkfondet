@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sjokkfondet — FrogLab by FutureFrogs</title>
+  <meta name="description" content="Når energikrisen fyller statskassen, bør pengene beskytte de som rammes. Et regelbasert alternativ til ad hoc-politikk og rentemedisin.">
+  <meta property="og:title" content="Sjokkfondet">
+  <meta property="og:description" content="Når energikrisen fyller statskassen, bør pengene beskytte de som rammes. Forskningsforankret policymodell fra FrogLab by FutureFrogs.">
+  <meta property="og:type" content="article">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #FAFBFC; }
+    input[type="range"] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 4px; outline: none; background: #E0E2E8; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; background: #0D7377; border: 3px solid #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; background: #0D7377; border: 3px solid #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    input[type="range"]::-moz-range-track { height: 8px; border-radius: 4px; background: #E0E2E8; }
+    input[type="checkbox"] { cursor: pointer; }
+    button { cursor: pointer; border: none; }
+    a { transition: opacity 0.2s; }
+    a:hover { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState } = React;
+
+const C = {
+  bg: "#F7F8FA", card: "#FFFFFF", cardAlt: "#F0F2F5", hover: "#E8F4F4",
+  accent: "#0D7377", accentDim: "#0A5C5F",
+  green: "#047857", red: "#DC2626",
+  blue: "#0D7377", blueL: "#0D7377", teal: "#4338CA",
+  yellow: "#D97706", yellowDim: "#B45309",
+  purple: "#7C3AED",
+  ch1: "#0D7377", ch2: "#4338CA", ch3: "#B45309",
+  tx: "#1A1A2E", txD: "#3D3D56", txM: "#71718A",
+  border: "#DFE2E8", borderL: "#CFD2D8",
+  greenL: "#059669", redL: "#DC2626", purpleDim: "#6D28D9",
+};
+const F = { d: "'Playfair Display',Georgia,serif", b: "'Source Serif 4',Georgia,serif", u: "'DM Sans',sans-serif" };
+
+const Label = ({children,style}) => <span style={{fontFamily:F.u,fontSize:10,fontWeight:600,letterSpacing:"0.09em",textTransform:"uppercase",color:C.txM,...style}}>{children}</span>;
+const P = ({children,style}) => <p style={{fontFamily:F.b,fontSize:14.5,lineHeight:1.72,color:C.txD,margin:"0 0 12px",...style}}>{children}</p>;
+const Sec = ({title,icon,children,accent:a}) => (
+  <div style={{background:C.card,borderRadius:14,padding:"20px 16px 18px",marginBottom:20,border:`1px solid ${a||C.border}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)"}}>
+    {title&&<h2 style={{fontFamily:F.d,fontSize:18,fontWeight:700,color:C.tx,margin:"0 0 14px",display:"flex",alignItems:"center",gap:8}}>
+      {icon&&<span style={{fontSize:17}}>{icon}</span>}{title}</h2>}
+    {children}
+  </div>
+);
+const Acc = ({title,tag,children}) => {
+  const [o,setO]=useState(false);
+  return <div style={{background:o?C.hover:C.cardAlt,border:`1px solid ${o?C.accent:C.border}`,borderRadius:9,padding:"12px 15px",marginBottom:8,cursor:"pointer",transition:"all 0.2s"}} onClick={()=>setO(!o)}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <div style={{display:"flex",alignItems:"center",gap:7,flex:1,minWidth:0}}>
+        {tag&&<span style={{background:tag.c+"18",color:tag.c,padding:"1px 7px",borderRadius:10,fontSize:9.5,fontWeight:700,fontFamily:F.u,flexShrink:0}}>{tag.t}</span>}
+        <span style={{fontFamily:F.u,fontSize:12.5,fontWeight:600,color:C.tx}}>{title}</span>
+      </div>
+      <span style={{color:C.txM,fontSize:15,transform:o?"rotate(180deg)":"none",transition:"0.2s",flexShrink:0,marginLeft:8}}>▾</span>
+    </div>
+    {o&&<div style={{marginTop:11}} onClick={e=>e.stopPropagation()}>{children}</div>}
+  </div>;
+};
+const Metric = ({label,value,unit,color}) => (
+  <div style={{background:C.cardAlt,borderRadius:8,padding:"11px 13px",flex:"1 1 120px",minWidth:120,border:`1px solid ${C.border}`}}>
+    <Label>{label}</Label>
+    <div style={{fontFamily:F.d,fontSize:22,fontWeight:700,color:color||C.accent,marginTop:2}}>
+      {value}<span style={{fontSize:11,fontWeight:400,color:C.txM,marginLeft:3}}>{unit}</span>
+    </div>
+  </div>
+);
+const RC = ({source,year,finding,impl,type}) => {
+  const tc = type==="support"?C.green:type==="challenge"?C.red:C.yellow;
+  const tt = type==="support"?"STØTTER":type==="challenge"?"UTFORDRER":"NYANSERER";
+  return <div style={{background:C.cardAlt,borderRadius:9,padding:"13px 15px",marginBottom:8,borderLeft:`3px solid ${tc}`}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+      <span style={{fontFamily:F.u,fontSize:12,fontWeight:700,color:C.tx}}>{source} ({year})</span>
+      <span style={{fontFamily:F.u,fontSize:9,fontWeight:700,color:tc,background:tc+"15",padding:"1px 7px",borderRadius:8}}>{tt}</span>
+    </div>
+    <P style={{fontSize:12.5,margin:"0 0 4px",color:C.txD}}><strong style={{color:C.tx}}>Funn:</strong> {finding}</P>
+    <P style={{fontSize:12,margin:0,color:C.txM,fontStyle:"italic"}}>→ {impl}</P>
+  </div>;
+};
+const ChannelBar = ({name,icon,pct,color,desc,active}) => (
+  <div style={{display:"flex",alignItems:"center",gap:11,marginBottom:9,opacity:active?1:0.45}}>
+    <span style={{fontSize:15,width:20,textAlign:"center"}}>{icon}</span>
+    <div style={{flex:1}}>
+      <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+        <span style={{fontFamily:F.u,fontSize:11.5,fontWeight:600,color:C.tx}}>{name}</span>
+        <span style={{fontFamily:F.u,fontSize:10.5,fontWeight:700,color:color}}>{pct}%</span>
+      </div>
+      <div style={{height:5,background:C.border,borderRadius:3,overflow:"hidden"}}>
+        <div style={{height:"100%",width:`${pct}%`,background:color,borderRadius:3,transition:"width 0.4s"}}/>
+      </div>
+      <span style={{fontFamily:F.u,fontSize:10,color:C.txM}}>{desc}</span>
+    </div>
+  </div>
+);
+
+const FlowSVG = ({stage,score}) => {
+  const act = stage!=="inactive";
+  const full = stage==="full";
+  const deact = stage==="deactivating";
+  const post = stage==="post";
+  const col = {inactive:C.border,auto:C.yellow,full:C.green,deactivating:C.yellowDim,post:C.greenL}[stage]||C.border;
+  const cardFill = "#FFFFFF";
+  const bgFill = C.cardAlt;
+
+  return <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch",margin:"0 -4px",padding:"0 4px"}}><svg viewBox="0 0 700 430" style={{width:"100%",minWidth:520,maxWidth:700,display:"block",margin:"0 auto"}}>
+    <rect x={250} y={6} width={200} height={44} rx={10} fill={act?"#FEF9E7":cardFill} stroke={act?C.yellow:C.border} strokeWidth={act?2:1}/>
+    <text x={350} y={23} textAnchor="middle" fill={C.tx} fontSize={11} fontWeight={600} fontFamily={F.u}>Eksternt energiprissjokk</text>
+    <text x={350} y={38} textAnchor="middle" fill={act?C.yellow:C.txM} fontSize={9} fontFamily={F.u}>Sjokkindeks: {score}/100</text>
+
+    <line x1={350} y1={50} x2={350} y2={70} stroke={col} strokeWidth={act?2:1} opacity={act?1:0.4}/>
+    {act&&<polygon points="350,70 346,63 354,63" fill={col}/>}
+
+    <rect x={120} y={72} width={460} height={48} rx={10} fill={bgFill} stroke={C.borderL} strokeWidth={1}/>
+    <text x={160} y={90} fill={C.yellow} fontSize={9.5} fontWeight={700} fontFamily={F.u}>AUTOMATISK</text>
+    <text x={160} y={103} fill={C.txM} fontSize={9} fontFamily={F.u}>Avgiftslette + pristransparens</text>
+    <text x={380} y={90} fill={full||deact||post?C.green:C.txM} fontSize={9.5} fontWeight={700} fontFamily={F.u}>FAGLIG BEKREFTET</text>
+    <text x={380} y={103} fill={C.txM} fontSize={9} fontFamily={F.u}>{full?"Alle tiltak":deact?"Trapper ned":"Vurdering 30 dager"}</text>
+
+    <line x1={350} y1={120} x2={350} y2={142} stroke={col} strokeWidth={act?2:1} opacity={act?1:0.4}/>
+    {act&&<polygon points="350,142 346,136 354,136" fill={col}/>}
+
+    <rect x={225} y={144} width={250} height={46} rx={10} fill={act||post?"#ECFDF5":cardFill} stroke={act||post?C.green:C.border} strokeWidth={act||post?2:1}/>
+    <text x={350} y={162} textAnchor="middle" fill={C.tx} fontSize={11.5} fontWeight={700} fontFamily={F.u}>Sjokkfondet</text>
+    <text x={350} y={177} textAnchor="middle" fill={act||post?C.green:C.txM} fontSize={9} fontFamily={F.u}>
+      {post?"Deaktivert, grønn reinvestering aktiv":{full:"Alle tiltak aktivert",auto:"Avgiftslette aktivert",deactivating:"Trapper ned",inactive:"Inaktivt"}[stage]} {act?" | Tak: 0,5% BNP/kv":""}
+    </text>
+
+    <line x1={475} y1={167} x2={570} y2={167} stroke={C.blueL} strokeWidth={1} strokeDasharray="4 3" opacity={act?0.7:0.3}/>
+    <rect x={570} y={155} width={100} height={24} rx={7} fill={cardFill} stroke={C.blueL} strokeWidth={1} opacity={act?1:0.4}/>
+    <text x={620} y={170} textAnchor="middle" fill={C.blueL} fontSize={9} fontWeight={600} fontFamily={F.u} opacity={act?1:0.5}>Norges Bank</text>
+
+    <line x1={225} y1={167} x2={130} y2={167} stroke={C.accent} strokeWidth={1} strokeDasharray="4 3" opacity={act?0.7:0.3}/>
+    <rect x={20} y={155} width={110} height={24} rx={7} fill={act?C.accent+"10":cardFill} stroke={C.accent} strokeWidth={1} opacity={act?1:0.4}/>
+    <text x={75} y={170} textAnchor="middle" fill={C.accent} fontSize={9} fontWeight={600} fontFamily={F.u} opacity={act?1:0.5}>Konkurransetilsyn</text>
+
+    {[
+      {x:110,l:"Avgiftslette (25 % av midlene)",c:C.ch1,on:act&&!post},
+      {x:350,l:"Husholdningsstøtte (40 %)",c:C.ch2,on:full||deact},
+      {x:590,l:"Næringshjelp (35 %)",c:C.ch3,on:full||deact},
+    ].map((ch,i)=>{
+      const op=ch.on?1:0.35;
+      const fx=290+(i-1)*60, fy=190, tx=ch.x, ty=232;
+      const dx=tx-fx, dy=ty-fy, len=Math.sqrt(dx*dx+dy*dy);
+      const nx=dx/len, ny=dy/len, px=-ny, py=nx;
+      return <g key={i}>
+        <line x1={fx} y1={fy} x2={tx} y2={ty} stroke={ch.on?ch.c:C.border} strokeWidth={ch.on?1.5:1} opacity={op} strokeDasharray={ch.on?"none":"4 3"}/>
+        {ch.on&&<polygon points={`${tx},${ty} ${tx-nx*9+px*4.5},${ty-ny*9+py*4.5} ${tx-nx*9-px*4.5},${ty-ny*9-py*4.5}`} fill={ch.c}/>}
+        <rect x={ch.x-68} y={234} width={136} height={42} rx={8} fill={ch.on?cardFill:bgFill} stroke={ch.on?ch.c:C.border} strokeWidth={ch.on?1.5:1} opacity={op}/>
+        <text x={ch.x} y={252} textAnchor="middle" fill={C.tx} fontSize={10} fontWeight={600} fontFamily={F.u} opacity={op}>{ch.l}</text>
+        <text x={ch.x} y={265} textAnchor="middle" fill={C.txM} fontSize={9} fontFamily={F.u} opacity={op}>{ch.on?"● Aktiv":"○ Inaktiv"}</text>
+      </g>;
+    })}
+
+    {deact&&<>
+      <rect x={220} y={290} width={260} height={18} rx={6} fill={C.yellowDim+"12"} stroke={C.yellowDim+"33"} strokeWidth={1}/>
+      <text x={350} y={303} textAnchor="middle" fill={C.yellowDim} fontSize={9} fontWeight={600} fontFamily={F.u}>↓ Gradvis nedtrapping 3 måneder</text>
+    </>}
+
+    {post&&<>
+      <line x1={350} y1={276} x2={350} y2={302} stroke={C.greenL} strokeWidth={2}/>
+      <polygon points="350,302 346,296 354,296" fill={C.greenL}/>
+      <rect x={220} y={304} width={260} height={52} rx={10} fill={C.greenL+"08"} stroke={C.greenL} strokeWidth={1.5}/>
+      <text x={350} y={322} textAnchor="middle" fill={C.greenL} fontSize={10.5} fontWeight={700} fontFamily={F.u}>Grønn reinvestering</text>
+      <text x={350} y={336} textAnchor="middle" fill={C.txD} fontSize={9} fontFamily={F.u}>20% av brukte midler → fornybar/effektivisering</text>
+      <text x={350} y={348} textAnchor="middle" fill={C.txM} fontSize={8.5} fontFamily={F.u}>24 mnd utbetaling | Tak 5 mrd/år | Via Enova</text>
+    </>}
+
+    <rect x={240} y={375} width={220} height={18} rx={9} fill={(act||post)?col+"15":C.border+"22"}/>
+    <text x={350} y={387} textAnchor="middle" fill={(act||post)?col:C.txM} fontSize={10} fontWeight={600} fontFamily={F.u}>
+      {{inactive:"INAKTIV",auto:"AVGIFTSLETTE AKTIVERT",full:"ALLE TILTAK AKTIVERT",deactivating:"TRAPPER NED",post:"GRØNN REINVESTERING"}[stage]}
+    </text>
+  </svg></div>;
+};
+
+
+function PSFv4() {
+  const [oil,setOil]=useState(55);
+  const [vol,setVol]=useState(40);
+  const [geo,setGeo]=useState(50);
+  const [phase,setPhase]=useState("live");
+  const [akkBruk,setAkkBruk]=useState(0);
+
+  const score = Math.round(oil*0.4+vol*0.3+geo*0.3);
+  const liveStage = score>=75?"full":score>=60?"auto":"inactive";
+  const stage = phase==="deact"?"deactivating":phase==="post"?"post":liveStage;
+  const stageCol = {inactive:C.txM,auto:C.yellow,full:C.green,deactivating:C.yellowDim,post:C.greenL}[stage];
+  const stageLabel = {inactive:"Inaktivt",auto:"Avgiftslette aktivert",full:"Alle tiltak aktivert",deactivating:"Trapper ned",post:"Grønn reinvestering"}[stage];
+  const kvartalsramme = 20;
+  const bruksFaktor = score>=75 ? 0.6+(score-75)*0.016 : score>=60 ? 0.2+(score-60)*0.027 : 0;
+  const estimertBruk = Math.round(kvartalsramme * bruksFaktor * 10) / 10;
+  const nedtrappBruk = phase==="deact" ? 8.6 : 0;
+  const greenTotal = akkBruk > 0 ? Math.round(akkBruk * 0.2 * 10) / 10 : Math.round(estimertBruk * 0.2 * 10) / 10;
+  const greenPerYear = Math.min(greenTotal, 5);
+  const greenMonths = greenTotal > 0 ? Math.max(24, Math.ceil(greenTotal / 5) * 12) : 0;
+
+  return <div style={{background:C.bg,minHeight:"100vh",padding:"24px 12px",fontFamily:F.u,overflowX:"hidden"}}>
+    <div style={{maxWidth:720,margin:"0 auto"}}>
+
+    {/* ===== HEADER ===== */}
+    <div style={{textAlign:"center",marginBottom:24}}>
+      <Label style={{color:C.accent}}>FrogLab - mars 2026</Label>
+      <h1 style={{fontFamily:F.d,fontSize:28,fontWeight:900,color:C.tx,margin:"7px 0 5px",lineHeight:1.2}}>Sjokkfondet</h1>
+      <p style={{fontFamily:F.b,fontSize:15,color:C.txD,margin:0,maxWidth:540,marginLeft:"auto",marginRight:"auto"}}>
+        Når kriger og energikriser fyller statskassen, bør vi ikke heve renta, men bruke pengene der de virker. Et regelbasert alternativ til ad hoc-politikk og rentemedisin.
+      </p>
+    </div>
+
+    {/* ===== PROBLEMET ===== */}
+    <Sec icon="⚠️" accent={C.red+"33"}>
+      <P style={{fontSize:16,fontWeight:600,color:C.tx,lineHeight:1.65,margin:"0 0 14px"}}>
+        Når inflasjonen skyldes krig, energiprissjokk og markedskonsentrasjon — ikke overforbruk — er rentepolitikken feil medisin. Den straffer husholdninger for et problem de ikke forårsaket.
+      </P>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:10,marginBottom:14}}>
+        <div style={{background:C.red+"08",borderRadius:10,padding:"14px 16px",border:`1px solid ${C.red}22`}}>
+          <P style={{fontSize:12,fontWeight:700,color:C.red,margin:"0 0 6px"}}>Renteverktøyet alene</P>
+          <P style={{fontSize:12,margin:"0 0 4px"}}>• Demper etterspørsel — men problemet er tilbud</P>
+          <P style={{fontSize:12,margin:"0 0 4px"}}>• Rammer alle likt — men byrden er ulik</P>
+          <P style={{fontSize:12,margin:"0 0 4px"}}>• Kan forsterke prispress via bedrifters finanskostnader</P>
+          <P style={{fontSize:12,margin:0}}>• Ingen kobling til statens merinntekter fra sjokket</P>
+        </div>
+        <div style={{background:C.green+"08",borderRadius:10,padding:"14px 16px",border:`1px solid ${C.green}22`}}>
+          <P style={{fontSize:12,fontWeight:700,color:C.green,margin:"0 0 6px"}}>Sjokkfondet</P>
+          <P style={{fontSize:12,margin:"0 0 4px"}}>• Senker priser direkte — treffer de faktiske driverne</P>
+          <P style={{fontSize:12,margin:"0 0 4px"}}>• Målrettet — beskytter de mest sårbare</P>
+          <P style={{fontSize:12,margin:"0 0 4px"}}>• Demper bedrifters kostnadspress, ikke etterspørsel</P>
+          <P style={{fontSize:12,margin:0}}>• Finansiert av merinntektene sjokket selv genererer</P>
+        </div>
+      </div>
+      <P style={{fontSize:14,fontWeight:600,color:C.accent,margin:0}}>
+        Renten er designet for å bremse overforbruk. Men når inflasjonen skyldes krig og energisjokk, trengs et verktøy som treffer årsaken — ikke boliglånet.
+      </P>
+    </Sec>
+
+    {/* ===== DEL I: MODELLEN ===== */}
+    <div style={{borderTop:`2px solid ${C.accent}`,marginBottom:6,paddingTop:4,marginTop:8}}>
+      <Label style={{color:C.accent,fontSize:11}}>Del I</Label>
+      <h2 style={{fontFamily:F.d,fontSize:22,fontWeight:900,color:C.tx,margin:"4px 0 16px"}}>Modellen</h2>
+    </div>
+
+    <P style={{fontSize:14,color:C.txD,margin:"0 0 18px"}}>
+      Sjokkfondet er regelbasert, forskningsforankret og designet for å gjøre seg selv overflødig. Det aktiveres kun ved eksterne sjokk, trapper ned automatisk, og gjør Norge mindre sårbart for neste krise.
+    </P>
+
+    {/* Simulator */}
+    <Sec title="Simuler hele livssyklusen" icon="⚙️">
+      <P style={{fontSize:13,margin:"0 0 6px"}}>Sjokkindeksen måler ikke prisnivå, men hastige endringer og kontekst. En oljepris på $110 etter gradvis stigning over 18 måneder gir lav score. Et hopp fra $70 til $119 på én uke — kombinert med markedsuro og krig — gir en score som utløser fondet.</P>
+      <P style={{fontSize:12,color:C.txM,margin:"0 0 14px"}}>Følg sjokkets livssyklus med knappene under, eller dra i gliderne selv.</P>
+
+      <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
+        {[
+          {l:"Sjokket kommer",p:"live",c:C.yellow,oil:50,vol:65,geo:80,akk:6.2},
+          {l:"Sjokket er her",p:"live",c:C.red,oil:95,vol:85,geo:90,akk:23.3},
+          {l:"Sjokket avtar",p:"deact",c:C.yellowDim,oil:30,vol:35,geo:40,akk:31.9},
+          {l:"Etter krisen",p:"post",c:C.greenL,oil:15,vol:20,geo:15,akk:31.9},
+        ].map(b=><button key={b.l} onClick={()=>{setPhase(b.p);setOil(b.oil);setVol(b.vol);setGeo(b.geo);setAkkBruk(b.akk);}} style={{
+          flex:"1 1 auto",padding:"7px 12px",borderRadius:6,border:`1px solid ${phase===b.p&&oil===b.oil?b.c:C.border}`,
+          background:phase===b.p&&oil===b.oil?b.c+"12":"transparent",
+          color:phase===b.p&&oil===b.oil?b.c:C.txM,
+          fontSize:10,fontWeight:600,fontFamily:F.u,cursor:"pointer"
+        }}>{b.l}</button>)}
+      </div>
+
+      <div style={{background:C.cardAlt,borderRadius:12,padding:"20px 18px 10px",border:`1px solid ${C.border}`,marginBottom:14}}>
+        <div style={{marginBottom:14}}>
+          <span style={{fontFamily:F.u,fontSize:13,fontWeight:600,color:C.tx}}>Prøv selv:</span>
+        </div>
+        {[
+          {l:"Prishopp",sub:"endring vs. 90-dagers snitt",w:"vekt 40 %",v:oil,s:setOil},
+          {l:"Markedsuro",sub:"volatilitet siste 30 dager",w:"vekt 30 %",v:vol,s:setVol},
+          {l:"Konfliktrisiko",sub:"geopolitisk risikoindeks",w:"vekt 30 %",v:geo,s:setGeo},
+        ].map(x=><div key={x.l} style={{marginBottom:18}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:6}}>
+            <div>
+              <span style={{fontFamily:F.u,fontSize:13,fontWeight:700,color:C.tx}}>{x.l}</span>
+              <span style={{fontFamily:F.u,fontSize:11,color:C.txM,marginLeft:6}}>{x.sub} ({x.w})</span>
+            </div>
+            <span style={{fontFamily:F.d,fontSize:20,fontWeight:700,color:C.accent}}>{x.v}</span>
+          </div>
+          <input type="range" min={0} max={100} value={x.v} onChange={e=>{x.s(parseInt(e.target.value));setPhase("live");setAkkBruk(0);}} style={{width:"100%",height:8}}/>
+        </div>)}
+      </div>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
+        <Metric label="Sjokkindeks" value={score} unit="/100" color={stageCol}/>
+        <Metric label="Status" value={stageLabel} unit="" color={stageCol}/>
+      </div>
+      {(stage!=="inactive")&&<div style={{background:stage==="post"?C.greenL+"08":C.cardAlt,borderRadius:9,padding:"12px 14px",marginBottom:14,border:`1px solid ${stage==="post"?C.greenL+"33":C.border}`}}>
+        {stage==="post"?<>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:8}}>
+            <div>
+              <Label style={{color:C.greenL}}>Grønn reinvestering</Label>
+              <P style={{fontSize:12,fontWeight:600,color:C.greenL,margin:"3px 0 0"}}>Pågår</P>
+            </div>
+            <div>
+              <Label>Avsatt</Label>
+              <P style={{fontSize:12,fontWeight:600,color:C.greenL,margin:"3px 0 0"}}>{greenTotal} mrd kr</P>
+              <P style={{fontSize:10,color:C.txM,margin:0}}>20 % av {akkBruk} mrd totalt brukt</P>
+            </div>
+            <div>
+              <Label>Tak</Label>
+              <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"3px 0 0"}}>{greenPerYear} mrd kr/år</P>
+              <P style={{fontSize:10,color:C.txM,margin:0}}>{greenTotal>5?`Absorpsjonstak, over ${greenMonths} mnd`:"Over 24 mnd"}</P>
+            </div>
+            <div>
+              <Label>Forvalter</Label>
+              <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"3px 0 0"}}>Enova</P>
+              <P style={{fontSize:10,color:C.txM,margin:0}}>Fornybar, effektivisering, nett</P>
+            </div>
+          </div>
+          <div style={{marginTop:10,paddingTop:8,borderTop:`1px solid ${C.border}`}}>
+            <P style={{fontSize:10.5,color:C.txM,margin:0}}>Stabilisering avsluttet. Ble brukt totalt i sjokket: {akkBruk} mrd kr. Restmidler tilbakeføres til SPU.</P>
+          </div>
+        </>:<>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:8}}>
+            <div>
+              <Label>Finansiering</Label>
+              <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"3px 0 0"}}>Petroleums-merinntekter</P>
+            </div>
+            <div>
+              <Label>Ramme (tak)</Label>
+              <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"3px 0 0"}}>{kvartalsramme} mrd kr/kv</P>
+              <P style={{fontSize:10,color:C.txM,margin:0}}>0,5 % fastlands-BNP</P>
+            </div>
+            <div>
+              <Label>Brukt denne perioden</Label>
+              <P style={{fontSize:12,fontWeight:600,color:stageCol,margin:"3px 0 0"}}>
+                {stage==="deactivating"?`${nedtrappBruk} mrd kr`:`${estimertBruk} mrd kr`}
+              </P>
+              <P style={{fontSize:10,color:C.txM,margin:0}}>
+                {stage==="deactivating"?"Trapper ned over 3 mnd":`${Math.round(bruksFaktor*100)} % av ramme`}
+              </P>
+            </div>
+            <div>
+              <Label>Totalt brukt</Label>
+              <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"3px 0 0"}}>{akkBruk||estimertBruk} mrd kr</P>
+              <P style={{fontSize:10,color:C.txM,margin:0}}>Akkumulert over hele sjokket</P>
+            </div>
+          </div>
+        </>}
+      </div>}
+      <FlowSVG stage={stage} score={score}/>
+    </Sec>
+
+    {/* Channels */}
+    <Sec title="Slik brukes pengene" icon="🔀">
+      <P style={{fontSize:13,margin:"0 0 14px"}}>Trykk for å se hvordan hvert tiltak fungerer i praksis.</P>
+      <Acc title="⚡ Avgiftslette — 25 % av midlene" tag={{t:"AUTOMATISK",c:C.purple}}>
+        <ChannelBar name="Avgiftslette" icon="⚡" pct={25} color={C.ch1} active={true} desc="Kutt i statlige avgifter som driver energi- og transportkostnader."/>
+        <div style={{background:C.cardAlt,borderRadius:7,padding:"10px 12px",marginTop:8}}>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"0 0 5px"}}>Hva kuttes?</P>
+          <P style={{fontSize:11.5,margin:"0 0 4px"}}>Elavgift, nettleie, veibruksavgift på bensin/diesel, CO₂-avgift på drivstoff. Rettet mot inputkostnader — ikke subsidiert sluttforbrukerpris.</P>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"6px 0 5px"}}>Hvordan?</P>
+          <P style={{fontSize:11.5,margin:"0 0 4px"}}>Gjennom eksisterende avgiftssystem (Skatteetaten, Tolletaten). Kan tre i kraft innen dager — Stortinget vedtok et lignende kutt 26. mars på fem dagers varsel.</P>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"6px 0 5px"}}>Presedens</P>
+          <P style={{fontSize:11.5,margin:0}}>Strømstøtten 2021–23, Norgespris fra 2025, veibruksavgiftkutt mars 2026. Infrastrukturen finnes. Det eneste nye er at det skjer automatisk.</P>
+        </div>
+      </Acc>
+      <Acc title="🏠 Husholdningsstøtte — 40 % av midlene" tag={{t:"FAGLIG BEKREFTET",c:C.yellow}}>
+        <ChannelBar name="Husholdningsstøtte" icon="🏠" pct={40} color={C.ch2} active={true} desc="Behovsprøvd støtte til de som rammes hardest."/>
+        <div style={{background:C.cardAlt,borderRadius:7,padding:"10px 12px",marginTop:8}}>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"0 0 5px"}}>Hvem kvalifiserer?</P>
+          <P style={{fontSize:11.5,margin:"0 0 4px"}}>Husholdninger under medianinntekt og/eller med gjeldsgrad over 200 %. Kriteriene finnes allerede i bostøtte og strømstøtte.</P>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"6px 0 5px"}}>Hvor mye?</P>
+          <P style={{fontSize:11.5,margin:"0 0 4px"}}>Kalibrert etter IMF (Arregui et al. 2022): Full kompensasjon av de 20 % med lavest inntekt koster 0,4 % av BNP. Kvartalstak 0,5 % fastlands-BNP begrenser total utbetaling.</P>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"6px 0 5px"}}>Hvordan?</P>
+          <P style={{fontSize:11.5,margin:0}}>Via Skatteetaten (som har inntekts- og gjeldsdata) eller NAV (som forvalter bostøtte). Konkret utbetalingskanal må utredes.</P>
+        </div>
+      </Acc>
+      <Acc title="🏭 Næringshjelp — 35 % av midlene" tag={{t:"FAGLIG BEKREFTET",c:C.yellow}}>
+        <ChannelBar name="Næringshjelp" icon="🏭" pct={35} color={C.ch3} active={true} desc="Demper bedriftenes kostnadssjokk direkte."/>
+        <div style={{background:C.cardAlt,borderRadius:7,padding:"10px 12px",marginTop:8}}>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"0 0 5px"}}>Tre delmekanismer</P>
+          <P style={{fontSize:11.5,margin:"0 0 4px"}}>1. Redusert arbeidsgiveravgift — via Skatteetaten, virker umiddelbart, brukt under COVID.</P>
+          <P style={{fontSize:11.5,margin:"0 0 4px"}}>2. Energikostnadskompensasjon for bedrifter over en terskel — ligner CO₂-kompensasjonsordningen.</P>
+          <P style={{fontSize:11.5,margin:"0 0 4px"}}>3. Kommunalt driftstilskudd — hindrer at kommuner kutter tjenester fordi energibudsjettet sprekker.</P>
+          <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"6px 0 5px"}}>Hvorfor bedrift først?</P>
+          <P style={{fontSize:11.5,margin:0}}>Glocker & Wegmüller (2024): Bedriftssubsidier er mer effektive enn forbrukerskattekutt. De demper kostnadspress uten å øke etterspørselen.</P>
+        </div>
+      </Acc>
+      <Acc title="🏠 Husleietak" tag={{t:"UNDER AKTIVERING",c:C.txM}}><div style={{background:C.cardAlt,borderRadius:7,padding:"10px 12px"}}>
+        <P style={{fontSize:11.5,margin:"0 0 4px"}}>Maks 2 % årlig husleiejustering så lenge Sjokkfondet er aktivt. Spania innførte nøyaktig dette i 2022. Oppheves automatisk ved deaktivering.</P>
+      </div></Acc>
+      <Acc title="🏦 Koordinering med Norges Bank" tag={{t:"UNDER AKTIVERING",c:C.txM}}><div style={{background:C.cardAlt,borderRadius:7,padding:"10px 12px"}}>
+        <P style={{fontSize:11.5,margin:"0 0 4px"}}>Formell konsultasjon, ikke vetorett. NB kan justere rentebane i lys av fondets tiltak. Fondet gjør Norges Banks jobb lettere, ikke vanskeligere.</P>
+      </div></Acc>
+      <Acc title="🔍 Pristransparens" tag={{t:"UNDER AKTIVERING",c:C.txM}}><div style={{background:C.cardAlt,borderRadius:7,padding:"10px 12px"}}>
+        <P style={{fontSize:11.5,margin:"0 0 4px"}}>Aktører med over 20 % markedsandel må rapportere margindata til Konkurransetilsynet. Kvartalsvis offentliggjøring. Ikke prisregulering, bare synlighet.</P>
+      </div></Acc>
+      <Acc title="♻️ Grønn reinvestering" tag={{t:"ETTER DEAKTIVERING",c:C.greenL}}><div style={{background:C.cardAlt,borderRadius:7,padding:"10px 12px"}}>
+        <P style={{fontSize:11.5,margin:"0 0 4px"}}>Etter deaktivering: 20 % av det Sjokkfondet faktisk brukte øremerkes energieffektivisering i bygg, fornybar kapasitet, ladeinfrastruktur og nettutbygging. Utbetales over minimum 24 mnd. Absorpsjonstak 5 mrd/år. Forvaltes av Enova.</P>
+        <P style={{fontSize:12,fontWeight:600,color:C.tx,margin:"8px 0 5px"}}>Hvorfor etterpå — ikke samtidig?</P>
+        <P style={{fontSize:11.5,margin:"0 0 4px"}}><strong style={{color:C.tx}}>Etterspørselskonflikt:</strong> Under et prissjokk er økonomien allerede presset på kapasitetssiden. Grønne investeringer er etterspørsel — bygg, materialer, arbeidskraft. Å investere under krisen motvirker fondets eget formål.</P>
+        <P style={{fontSize:11.5,margin:"0 0 4px"}}><strong style={{color:C.tx}}>Motsyklisk timing:</strong> Etter sjokket faller typisk boliginvesteringene og byggebransjen får ledig kapasitet. Da er grønne investeringer billigere og gir mer fornybar per krone.</P>
+        <P style={{fontSize:11.5,margin:"0 0 4px"}}><strong style={{color:C.tx}}>Politisk disiplin:</strong> Hvis fondet kan brukes til stabilisering og investering samtidig, skaper det press for å holde fondet aktivt lenger enn nødvendig. Ren separasjon hindrer formålsglidning.</P>
+        <P style={{fontSize:11.5,margin:0}}><strong style={{color:C.tx}}>Selvkorrigerende:</strong> Ved å knytte grønn reinvestering til faktisk brukte midler, genererer større sjokk automatisk større grønne investeringer. Denne logikken fungerer bare rent hvis stabilisering og investering er sekvensielle — aldri samtidige.</P>
+      </div></Acc>
+    </Sec>
+
+    {/* Governance */}
+    <Sec title="Hvem gjør hva i Sjokkfondet" icon="🏛️">
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:8}}>
+        {[
+          {r:"Stortinget",t:"Vedtar lov. Terskler, tiltak, BNP-tak. Kun lovendring kan endre.",i:"📜"},
+          {r:"Finansdep.",t:"Operasjonell forskrift. Kan ikke endre terskler eller tak.",i:"🏢"},
+          {r:"SSB (Fagråd)",t:"Beregner sjokkindeks ukentlig. Vurderer sjokkets karakter.",i:"📊"},
+          {r:"Norges Bank",t:"Forvalter fondsmidler. Konsulteres ved aktivering.",i:"🏦"},
+          {r:"Konkurranse-tilsynet",t:"Pristransparens ved aktivering: sanntids margindata.",i:"🔍"},
+          {r:"Enova",t:"Forvalter grønn reinvestering etter deaktivering.",i:"♻️"},
+        ].map(g=><div key={g.r} style={{background:C.cardAlt,borderRadius:8,padding:12,border:`1px solid ${C.border}`}}>
+          <div style={{fontSize:17,marginBottom:4}}>{g.i}</div>
+          <div style={{fontFamily:F.u,fontSize:11,fontWeight:700,color:C.accent,marginBottom:4}}>{g.r}</div>
+          <P style={{fontSize:10.5,margin:0,lineHeight:1.4}}>{g.t}</P>
+        </div>)}
+      </div>
+      <div style={{background:C.red+"08",borderRadius:8,padding:"10px 13px",marginTop:10,border:`1px solid ${C.red}22`}}>
+        <P style={{fontSize:12,fontWeight:700,color:C.red,margin:"0 0 3px"}}>Disiplinregel (lovfestet)</P>
+        <P style={{fontSize:11.5,margin:0}}>Sjokkfondet skal aldri kombinere stabiliseringsutbetalinger med investeringsutgifter i samme aktiveringsperiode.</P>
+      </div>
+    </Sec>
+
+    {/* When triggers / when not */}
+    <Sec title="Hva utløser fondet — og hva gjør det ikke?" icon="🎚️">
+      {[
+        {s:"Krig stenger Hormuz, olje fra $70→$119 på 1 uke",w:"Ekstremt prishopp + markedsuro + konfliktrisiko → aktiveres.",a:true},
+        {s:"Oljeprisen stiger gradvis til $110 over 18 måneder",w:"Lav volatilitet, ingen sjokk → aktiveres ikke.",a:false},
+        {s:"Karbonpris driver energipriser opp strukturelt",w:"Omstillingssignal, ikke sjokk → aktiveres ikke.",a:false},
+        {s:"Dagligvarekjeder øker marginer utover kostnadsøkning",w:"Ikke makrosjokk → Konkurransetilsynet, ikke fondet.",a:false},
+      ].map((x,i)=><div key={i} style={{background:x.a?C.green+"08":C.cardAlt,borderRadius:8,padding:"9px 12px",marginBottom:5,border:`1px solid ${x.a?C.green+"22":C.border}`}}>
+        <span style={{fontSize:9,fontWeight:700,fontFamily:F.u,color:x.a?C.green:C.red,background:(x.a?C.green:C.red)+"12",padding:"1px 6px",borderRadius:7}}>{x.a?"AKTIVERES":"AKTIVERES IKKE"}</span>
+        <P style={{fontSize:11.5,fontWeight:600,color:C.tx,margin:"4px 0 2px"}}>{x.s}</P>
+        <P style={{fontSize:10.5,color:C.txM,margin:0}}>{x.w}</P>
+      </div>)}
+    </Sec>
+
+    {/* Design principles */}
+    <Sec title="Designprinsipper" icon="📐">
+      {[
+        {n:"I",t:"Aktiveres kun ved sjokk",d:"Sammensatt indeks (prishopp 40%, markedsuro 30%, konfliktrisiko 30%). Gradvis prisøkning utløser ikke fondet.",ref:"Bernanke & Blanchard 2025; James et al. 2022"},
+        {n:"II",t:"Automatisk først, faglig vurdert etterpå",d:"Avgiftslette aktiveres automatisk ved sjokkindeks over 60. Øvrige tiltak aktiveres når fagrådet bekrefter sjokkets karakter. Kvartalsvis revurdering, skifter sjokket karakter anbefales nedtrapping.",ref:"GAO 2025; Blanchard 2025; Cassinis et al. 2025"},
+        {n:"III",t:"Mer til bedrifter, tak på totalen",d:"Avgiftslette 25 %, husholdningsstøtte 40 %, næringshjelp 35 % av fondets midler. Kvartalstak 0,5 % av fastlands-BNP. Gjeldsnøytralitet.",ref:"Glocker & Wegmüller 2024; Erceg et al. 2024; IMF 2022"},
+        {n:"IV",t:"Trapper ned av seg selv",d:"3 mnd lineær nedtrapping. Sjokkfondet kombinerer aldri stabiliseringsutbetalinger med investeringsutgifter i samme periode.",ref:"Chile ESSF; Frankel (NBER)"},
+        {n:"V",t:"Synliggjør marginer under krise",d:"Ved aktivering: Konkurransetilsynet får sanntids prisdata og krav om kvartalsvis marginoffentliggjøring. Transparens, ikke prisregulering.",ref:"Weber & Wasner 2023; EU Parl. 2024"},
+        {n:"VI",t:"Hvert sjokk gjør Norge grønnere",d:"Etter deaktivering: 20% av faktisk brukte midler → energieffektivisering/fornybar via Enova. 24 mnd utbetaling, absorpsjonstak 5 mrd/år.",ref:"IISD; CETEx 2025; Semieniuk et al. 2020"},
+      ].map(p=><Acc key={p.n} title={`${p.n}. ${p.t}`}>
+        <P style={{margin:"0 0 3px",fontSize:13}}>{p.d}</P>
+        <P style={{fontSize:11,color:C.txM,fontStyle:"italic",margin:0}}>Kilde: {p.ref}</P>
+      </Acc>)}
+    </Sec>
+
+    <P style={{fontSize:12.5,color:C.txM,fontStyle:"italic",textAlign:"center",margin:"0 0 20px"}}>
+      Modellen beskriver arkitektur og prinsipper. Detaljert innretning — herunder sjokkindeksens kalibrering, eksakte kvalifiseringskriterier og juridisk hjemmelsgrunnlag — må utredes som del av et lovforarbeid.
+    </P>
+
+    {/* ===== CASE: AKKURAT NÅ ===== */}
+    <Sec icon="📌" accent={C.red+"33"}>
+      <P style={{fontSize:14,fontWeight:700,color:C.red,margin:"0 0 8px"}}>Akkurat nå: Mars 2026</P>
+      <P style={{fontSize:12.5,margin:"0 0 6px"}}>Iran-krigen stenger Hormuzstredet. Oljeprisen hopper fra 70 til 119 dollar på én uke. Gass doblet. Drivstoffpriser over 30 kr/liter. Transport, mat og energikostnader stiger i hele verdikjeden.</P>
+      <P style={{fontSize:12.5,margin:"0 0 6px"}}>Norges Banks svar: Mulig renteheving allerede 7. mai — den første siden desember 2023. Markedet priser inn over 60 % sannsynlighet. Én heving gir 600 kr/mnd ekstra per million i boliglån.</P>
+      <P style={{fontSize:12.5,margin:"0 0 6px"}}>Stortingets svar: Høyre fremmet hasteforslag om å fjerne veibruksavgiften. Senterpartiet brøt budsjettavtalen og stemte med høyresiden. Vedtaket kostet 6,7 milliarder — uten inndekning, uten behovsprøving, uten automatisk avslutning. Ap/Stoltenberg advarte mot inflasjon. SV vil ha kontantutbetalinger. MDG vil dele ut CO₂-avgiften. Frp vil kutte enda mer.</P>
+      <P style={{fontSize:12.5,margin:"0 0 6px"}}>Nordeas sjeføkonom innrømmer: «Det er først og fremst tjenesteprisene som har vært for høye. Hvis man nå får et råvaresjokk som presser opp vareprisene også, kan det bli en utfordring for Norges Bank.» Renten er designet for det første problemet — ikke det andre.</P>
+      <P style={{fontSize:12.5,fontWeight:600,color:C.accent,margin:0}}>Alle har rett i noe. Ingen har et system. Husholdningene får tredobbelt smell — dyrere drivstoff, dyrere mat, høyere rente — mens statskassen fylles raskere enn noensinne. Sjokkfondet ville erstattet dette kaoset med en regelbasert respons.</P>
+    </Sec>
+
+    {/* ===== DAGENS VERKTØY ===== */}
+    <Sec title="Dagens verktøy — og hullet mellom dem" icon="🧰">
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:8}}>
+        {[
+          {who:"Norges Bank",tools:"Styringsrenten",limit:"Treffer etterspørsel. Samme medisin uansett diagnose.",icon:"🏦",color:C.blueL},
+          {who:"Regjeringen",tools:"Skatter, avgifter, overføringer",limit:"Krever flertall. Tar måneder. Ender i hestehandel — som forrige uke.",icon:"🏛️",color:C.accent},
+          {who:"Konkurransetilsynet",tools:"Etterforskning, gebyr",limit:"Reagerer i etterkant. 95 % markedsandel i dagligvare — prisene stiger videre.",icon:"🔍",color:C.accent},
+        ].map(r=><div key={r.who} style={{background:C.cardAlt,borderRadius:9,padding:"12px 14px",borderLeft:`3px solid ${r.color}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
+            <span style={{fontSize:14}}>{r.icon}</span>
+            <span style={{fontFamily:F.u,fontSize:12.5,fontWeight:700,color:r.color}}>{r.who}</span>
+          </div>
+          <P style={{fontSize:11.5,margin:"0 0 3px"}}><strong style={{color:C.tx}}>Verktøy:</strong> {r.tools}</P>
+          <P style={{fontSize:11.5,margin:0,color:C.txM}}><strong style={{color:C.red}}>Begrensning:</strong> {r.limit}</P>
+        </div>)}
+        <div style={{background:C.accent+"10",borderRadius:9,padding:"12px 14px",borderLeft:`3px solid ${C.accent}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
+            <span style={{fontSize:14}}>⚠️</span>
+            <span style={{fontFamily:F.u,fontSize:12.5,fontWeight:700,color:C.accent}}>Det som mangler</span>
+          </div>
+          <P style={{fontSize:11.5,margin:0}}>Ingen kobler statens ekstrainntekter til folks ekstrakostnader ved sjokk. Det er dette gapet Sjokkfondet fyller.</P>
+        </div>
+      </div>
+    </Sec>
+
+    {/* ===== DEL II: MOTFORESTILLINGER ===== */}
+    <div style={{borderTop:`2px solid ${C.red}`,marginBottom:6,paddingTop:4,marginTop:8}}>
+      <Label style={{color:C.red,fontSize:11}}>Del II</Label>
+      <h2 style={{fontFamily:F.d,fontSize:22,fontWeight:900,color:C.tx,margin:"4px 0 16px"}}>Motforestillinger</h2>
+    </div>
+
+    <Sec>
+      <Acc title="Avgiftskutt gir etterspørselslekkasje" tag={{t:"STERK",c:C.red}}>
+        <P style={{color:C.red,fontSize:12.5,fontStyle:"italic"}}>Erceg et al. (2024): Forbrukersubsidier kan virke mot sin hensikt.</P>
+        <P style={{color:C.green,fontSize:12.5}}>Avgiftslette er 25 % av fondets midler, rettet mot inputkostnader. 75 % av midlene går til behovsprøvd støtte og bedriftssubsidier med neglisjerbar etterspørselslekkasje. NB-koordinering justerer rentebane.</P>
+      </Acc>
+      <Acc title="Forventningskanalen: Aktørene slutter å tilpasse seg" tag={{t:"STERK",c:C.red}}>
+        <P style={{color:C.red,fontSize:12.5,fontStyle:"italic"}}>Hvis staten alltid kompenserer, endres lønnskrav, prissetting og spareatferd.</P>
+        <P style={{color:C.green,fontSize:12.5}}>Sjokk-triggeren sikrer aktivering kun der husholdningene ikke er årsak. Midlertidighet + automatisk deaktivering + 3 mnd nedtrapping begrenser forventningseffekt.</P>
+      </Acc>
+      <Acc title="Pro-syklisk fristelse — fondet blir for generøst" tag={{t:"STERK — NORGESSPESIFIKK",c:C.red}}>
+        <P style={{color:C.red,fontSize:12.5,fontStyle:"italic"}}>Frankel (NBER): Enorme merinntekter skaper uimotståelig press for å bruke mer.</P>
+        <P style={{color:C.green,fontSize:12.5}}>Kvartalstak 0,5% BNP. Lovfestet fondsstørrelse-tak. Automatisk deaktivering. Terskelverdier i lov, ikke forskrift. Og: grønn reinvestering gjør at jo mer Sjokkfondet bruker, jo mer investeres i å redusere fossil sårbarhet.</P>
+      </Acc>
+      <Acc title="Fossil lock-in: Fondet legitimerer fortsatt oljeproduksjon" tag={{t:"MODERAT",c:C.yellow}}>
+        <P style={{color:C.red,fontSize:12.5,fontStyle:"italic"}}>IISD: Hvis regjeringer stoler på fossil windfall, støtter det fortsatt utvinning.</P>
+        <P style={{color:C.green,fontSize:12.5}}>Adressert gjennom grønn reinvestering: Hvert sjokk genererer automatisk investeringer i fornybar kapasitet. Mekanismen gjør fossilkostnaden synlig. Sjokkfondet er designet for å gjøre seg selv overflødig.</P>
+      </Acc>
+      <Acc title="Pristransparens hemmer bedrifters kostnadsovervelting" tag={{t:"MODERAT",c:C.yellow}}>
+        <P style={{color:C.red,fontSize:12.5,fontStyle:"italic"}}>Bedrifter har legitime grunner til å øke priser ved kostnadssjokk.</P>
+        <P style={{color:C.green,fontSize:12.5}}>Mekanismen er transparens, ikke prisregulering. Bedrifter som øker priser i takt med kostnader har ingenting å frykte. De som øker utover — sellers' inflation — blir synlige.</P>
+      </Acc>
+      <Acc title="Grønn reinvestering etter deaktivering kan drive inflasjon" tag={{t:"BEGRENSET",c:C.txM}}>
+        <P style={{color:C.red,fontSize:12.5,fontStyle:"italic"}}>Investeringer i fornybar er etterspørsel — kan de drive prispress?</P>
+        <P style={{color:C.green,fontSize:12.5}}>Timingen er motsyklisk: Etter energiprissjokk er det typisk ledig kapasitet i bygg/anlegg. Absorpsjonstak 5 mrd/år begrenser risiko. Disiplinregelen sikrer at investering aldri skjer under aktiv stabilisering.</P>
+      </Acc>
+      <Acc title="Forskningsgrunnlaget er tynt for Norge spesifikt" tag={{t:"ERKJENT",c:C.txM}}>
+        <P style={{color:C.red,fontSize:12.5,fontStyle:"italic"}}>Nesten all forskning gjelder energi-importører.</P>
+        <P style={{color:C.green,fontSize:12.5}}>Erkjent. Modellen er en syntese, ikke en replikering. Hver designbeslutning kan spores til en spesifikk forskningsreferanse — men kombinasjonen er ny.</P>
+      </Acc>
+      <div style={{background:C.accent+"10",borderRadius:9,padding:"12px 14px",marginTop:12,border:`1px solid ${C.accent}33`}}>
+        <P style={{fontSize:13,fontWeight:600,color:C.tx,margin:0}}>Innvendingene handler om hvordan fondet bør innrettes — ikke om hvorvidt det trengs.</P>
+      </div>
+    </Sec>
+
+    {/* ===== DEL III: KUNNSKAPSGRUNNLAGET ===== */}
+    <div style={{borderTop:`2px solid ${C.accent}`,marginBottom:6,paddingTop:4}}>
+      <Label style={{color:C.accent,fontSize:11}}>Del III</Label>
+      <h2 style={{fontFamily:F.d,fontSize:22,fontWeight:900,color:C.tx,margin:"4px 0 16px"}}>Kunnskapsgrunnlaget</h2>
+    </div>
+
+    <Sec title="Forskningsgrunnlag" icon="📚">
+      <P style={{fontSize:13,margin:"0 0 12px"}}>Fem forskningsspørsmål, systematisk gjennomgått. Hver studie vurdert som støttende, utfordrende eller nyanserende.</P>
+      <Acc title="🔬 Virker det å bruke finanspolitikk mot prissjokk?">
+        <RC source="IMF / Dao et al." year="2023" type="support" finding="Europeiske tiltak under energikrisen 2022 reduserte inflasjonen med gjennomsnittlig 0,9 prosentpoeng." impl="Direkte empirisk bevis for at mekanismene i avgiftslette og husholdningsstøtte virker."/>
+        <RC source="CETEx Policy Report" year="2025" type="support" finding="Ukonvensjonell finanspolitikk var effektiv i Frankrike, Tyskland og Spania. Hastighet bør prioriteres over presisjon." impl="Støtter automatisk avgiftslette som førsterespons."/>
+        <RC source="Erceg et al. (IMF)" year="2024" type="challenge" finding="Forbrukersubsidier kan være kontraproduktive — men mer rom i små økonomier uten påvirkning på globale priser." impl="Grunnen til at Avgiftslette er 25 % av fondets midler, rettet mot inputkostnader."/>
+        <RC source="Glocker & Wegmüller" year="2024" type="support" finding="Bedriftssubsidier er mer effektive enn forbrukerskattekutt." impl="Direkte grunnlag for næringshjelp på 35 % av midlene."/>
+      </Acc>
+      <Acc title="🎯 Hva fungerer best — og for hvem?">
+        <RC source="IMF / Arregui et al." year="2022" type="support" finding="Full kompensasjon av de 20% med lavest inntekt koster 0,4% av BNP. Brede tiltak er lite treffsikre." impl="Kalibreringspunkt for husholdningsstøtte og kvartalstak."/>
+        <RC source="Spanias erfaring" year="2022–23" type="support" finding="Husleietak på 2%, mva-kutt på mat, målrettede overføringer. Inflasjon falt raskere enn eurosonen." impl="Empirisk grunnlag for husleietak-mekanismen."/>
+        <RC source="James et al." year="2022" type="support" finding="Land med stabiliseringsfond har ~13% lavere utgiftsvolatilitet. Men blandede effekter der regler er svake." impl="Forsterker argumentet for strenge regler."/>
+      </Acc>
+      <Acc title="⚡ Bør stabilisatorer være automatiske?">
+        <RC source="Blanchard (NBER)" year="2025" type="support" finding="Finanspolitikken bør spille større rolle gjennom quasi-automatiske stabilisatorer." impl="Direkte faglig autorisasjon for konseptet."/>
+        <RC source="GAO" year="2025" type="support" finding="Effektive stabilisatorer er tidsriktige, midlertidige, målrettede og forutsigbare." impl="Fire prinsipper som vår modell oppfyller."/>
+        <RC source="James et al." year="2022" type="nuance" finding="Empirisk evidens for optimale triggerterskler er sparsom." impl="Bekrefter at vår sjokk-trigger opererer i et forskningsgap."/>
+      </Acc>
+      <Acc title="🔍 Kan vi skille tilbudssjokk fra overforbruk?">
+        <RC source="Bernanke & Blanchard" year="2025" type="support" finding="Pandemisk inflasjon primært drevet av prissjokk, ikke arbeidsmarked. Replisert i 11 økonomier." impl="Faglig fundament for sjokk-differensiering."/>
+        <RC source="Cassinis et al. (ECB)" year="2025" type="challenge" finding="Inflasjonsdriverne skifter over tid." impl="Fagrådets mandat må inkludere løpende revurdering."/>
+      </Acc>
+      <Acc title="🏪 Forsterker markedsmakt prissjokk?">
+        <RC source="Weber & Wasner" year="2023" type="support" finding="Sellers' inflation: Bedrifter med markedsmakt bruker kostnadssjokk som dekke for prisøkninger som overstiger kostnadsøkning." impl="Grunnlag for pristransparens. Sjokkfondet behandler symptomet — sellers' inflation er en del av årsaken."/>
+        <RC source="EU-parlamentet" year="2024" type="support" finding="EU har et inflation governance gap — mangler verktøy for prissjokk i systemisk signifikante sektorer." impl="Norges dagligvaremarked (95 % markedsandel) er et lærebokeksempel."/>
+      </Acc>
+      <Acc title="🇳🇴 Norges særstilling — hva forskningen ikke dekker">
+        <P style={{color:C.accent,fontWeight:600,fontSize:13}}>Nesten all forskning gjelder energi-importører. Modellen er en syntese av to velutforskede strømmer anvendt på en unik kontekst.</P>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:8,marginTop:8}}>
+          <div style={{background:C.green+"08",borderRadius:9,padding:"12px 14px",border:`1px solid ${C.green}22`}}>
+            <P style={{fontSize:12,fontWeight:600,color:C.green,margin:"0 0 5px"}}>Hva posisjonen endrer:</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Finansiering er trivielt — merinntektene dekker kompensasjonen</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Sterkere legitimitet — direkte kausal kobling sjokk↔merinntekt↔kompensasjon</P>
+            <P style={{fontSize:11.5,margin:0}}>• Windfall-skatt innebygd i petroleumsskattesystemet</P>
+          </div>
+          <div style={{background:C.red+"08",borderRadius:9,padding:"12px 14px",border:`1px solid ${C.red}22`}}>
+            <P style={{fontSize:12,fontWeight:600,color:C.red,margin:"0 0 5px"}}>Hva den ikke endrer:</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Etterspørselseffekten er identisk</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Forventningskanalen gjelder fullt ut</P>
+            <P style={{fontSize:11.5,margin:0}}>• Risiko for overgenøsitet er forstørret</P>
+          </div>
+        </div>
+      </Acc>
+    </Sec>
+
+    {/* Summary */}
+    <Sec title="Oppsummert" icon="✦">
+      <P>Modellen inkluderer to mekanismer som angriper årsaker, ikke bare symptomer: Pristransparens demper sellers' inflation i konsentrerte markeder. Grønn reinvestering gjør hvert sjokk til en investering i redusert fremtidig sårbarhet.</P>
+      <P>Seks designprinsipper, hver sporbar til forskningsgrunnlaget. Syv motforestillinger systematisk adressert, med de sterkeste erkjent som delvis gyldige. En disiplinregel som hindrer sammenblanding av stabilisering og strukturpolitikk.</P>
+      <P style={{color:C.accent,fontWeight:600}}>Modellen er en syntese av forskning fra IMF, NBER, ECB, GAO, CETEx og ledende akademiske tidsskrifter, tilpasset Norges unike posisjon. Den er designet for å gjøre seg selv overflødig.</P>
+    </Sec>
+
+    <div style={{textAlign:"center",padding:"6px 0 12px",color:C.txM,fontSize:9,fontFamily:F.u,lineHeight:1.6}}>
+      Kunnskapsgrunnlag: Bernanke & Blanchard (AEJ:Macro 2025), Blanchard (NBER 2025), GAO-25-106455, Glocker & Wegmüller (JIMF 2024), Erceg et al. (IMF 2024),<br/>
+      Weber & Wasner (RKE 2023), CETEx (2025), IMF/Dao et al. (2023), IMF/Arregui et al. (2022), Cassinis et al. (ECB 2025),<br/>
+      James et al. (Ann.Rev.Res.Econ. 2022), Frankel (NBER), EU Parliament (2024), IISD, Semieniuk et al. (WIREs 2020).
+    </div>
+
+    <div style={{textAlign:"center",padding:"16px 0 28px",borderTop:`1px solid ${C.border}`,marginTop:8}}>
+      <P style={{fontSize:11,color:C.txD,margin:"0 0 8px",fontFamily:F.b,lineHeight:1.6,maxWidth:480,marginLeft:"auto",marginRight:"auto"}}>
+        FrogLab er et åpent laboratorium der gode konsepter og tanker utvikles og deles med verden. Drevet av kaffe, KI-sparring og nysgjerrighet.
+      </P>
+      <P style={{fontSize:10,color:C.txM,margin:"0 0 4px",fontFamily:F.u}}>
+        Denne modellen er publisert under{" "}
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.no" target="_blank" rel="noopener noreferrer" style={{color:C.accent,textDecoration:"none"}}>
+          Creative Commons BY-SA 4.0
+        </a>
+      </P>
+      <P style={{fontSize:10,color:C.txM,margin:0,fontFamily:F.u}}>
+        Du kan dele, tilpasse og bygge videre — også kommersielt — så lenge du krediterer og deler på samme vilkår.
+      </P>
+    </div>
+
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(PSFv4));
+  </script>
+</body>
+</html>
