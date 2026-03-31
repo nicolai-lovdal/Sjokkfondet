@@ -17,8 +17,10 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #060D1A; }
-    input[type="range"] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; outline: none; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; cursor: pointer; }
+    input[type="range"] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; outline: none; background: #1A2D4A; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; cursor: pointer; background: #C8922F; border: 2px solid #060D1A; }
+    input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; background: #C8922F; border: 2px solid #060D1A; }
+    input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: #1A2D4A; }
     input[type="checkbox"] { cursor: pointer; }
     button { cursor: pointer; border: none; }
     a { transition: opacity 0.2s; }
@@ -185,6 +187,7 @@ const FlowSVG = ({stage,score}) => {
 
     {/* Husleietak indicator */}
     {(act)&&<>
+      <line x1={70} y1={179} x2={70} y2={192} stroke={C.yellowDim+"66"} strokeWidth={1} strokeDasharray="3 2"/>
       <rect x={20} y={192} width={100} height={34} rx={7} fill={C.bg} stroke={C.yellowDim+"66"} strokeWidth={1}/>
       <text x={70} y={206} textAnchor="middle" fill={C.yellowDim} fontSize={9} fontWeight={600} fontFamily={F.u}>Husleietak</text>
       <text x={70} y={218} textAnchor="middle" fill={C.txM} fontSize={8.5} fontFamily={F.u}>Maks 2%/år</text>
@@ -503,53 +506,56 @@ function PSFv4() {
       <h2 style={{fontFamily:F.d,fontSize:22,fontWeight:900,color:C.tx,margin:"4px 0 16px"}}>Kunnskapsgrunnlaget</h2>
     </div>
 
-    <Sec title="1. Virker finanspolitisk respons på energiprissjokk?" icon="🔬">
-      <RC source="IMF / Dao et al." year="2023" type="support" finding="Europeiske tiltak under energikrisen 2022 reduserte inflasjonen med gjennomsnittlig 0,9 prosentpoeng." impl="Direkte empirisk bevis for at mekanismene i avgiftslette og husholdningsstøtte virker."/>
-      <RC source="CETEx Policy Report" year="2025" type="support" finding="Ukonvensjonell finanspolitikk var effektiv i Frankrike, Tyskland og Spania. Anbefaler eksplisitt at hastighet bør prioriteres over presisjon ved fremtidige tilbudssjokk." impl="Støtter automatisk Trinn 1."/>
-      <RC source="Erceg et al. (IMF)" year="2024" type="challenge" finding="Forbrukersubsidier kan være kontraproduktive. Betingelsene for at de virker er restriktive — men mer rom i små økonomier uten påvirkning på globale priser." impl="Grunnen til at Avgiftslette er 25%, rettet mot inputkostnader, ikke sluttforbrukerpris."/>
-      <RC source="Glocker & Wegmüller" year="2024" type="support" finding="Bedriftssubsidier er mer effektive enn forbrukerskattekutt. Målrettede finanspolitiske tiltak mer effektive enn pengepolitikk ved energiprisspiker." impl="Direkte grunnlag for næringshjelp på 35%."/>
-    </Sec>
+    <Sec title="Forskningsgrunnlag" icon="📚">
+      <P style={{fontSize:13,margin:"0 0 12px"}}>Fem forskningsspørsmål, systematisk gjennomgått. Hver studie vurdert som støttende, utfordrende eller nyanserende. Trykk for å utforske.</P>
 
-    <Sec title="2. Hva fungerer best — og for hvem?" icon="🎯">
-      <RC source="IMF / Arregui et al." year="2022" type="support" finding="Full kompensasjon av de nederste 20%: 0,4% av BNP. De nederste 40%: 0,9% av BNP. Brede prisundertrykkende tiltak er lite treffsikre." impl="Kalibreringspunkt for husholdningsstøtte og kvartalstak 0,5% BNP."/>
-      <RC source="Spanias erfaring" year="2022–23" type="support" finding="Husleietak på 2%, mva-kutt på mat, målrettede overføringer. Inflasjon falt raskere enn eurosonen." impl="Empirisk grunnlag for husleietak-mekanismen."/>
-      <RC source="Consensus / James et al." year="2022" type="support" finding="Land med stabiliseringsfond har ~13% lavere utgiftsvolatilitet. Men blandede effekter der regler er svake." impl="Kvantitativt ankerpunkt for Sjokkfond-konseptet. Forsterker argumentet for strenge regler."/>
-    </Sec>
+      <Acc title="🔬 Virker det å bruke finanspolitikk mot prissjokk?">
+        <RC source="IMF / Dao et al." year="2023" type="support" finding="Europeiske tiltak under energikrisen 2022 reduserte inflasjonen med gjennomsnittlig 0,9 prosentpoeng." impl="Direkte empirisk bevis for at mekanismene i avgiftslette og husholdningsstøtte virker."/>
+        <RC source="CETEx Policy Report" year="2025" type="support" finding="Ukonvensjonell finanspolitikk var effektiv i Frankrike, Tyskland og Spania. Anbefaler eksplisitt at hastighet bør prioriteres over presisjon ved fremtidige tilbudssjokk." impl="Støtter automatisk Trinn 1."/>
+        <RC source="Erceg et al. (IMF)" year="2024" type="challenge" finding="Forbrukersubsidier kan være kontraproduktive. Betingelsene for at de virker er restriktive — men mer rom i små økonomier uten påvirkning på globale priser." impl="Grunnen til at Avgiftslette er 25%, rettet mot inputkostnader, ikke sluttforbrukerpris."/>
+        <RC source="Glocker & Wegmüller" year="2024" type="support" finding="Bedriftssubsidier er mer effektive enn forbrukerskattekutt. Målrettede finanspolitiske tiltak mer effektive enn pengepolitikk ved energiprisspiker." impl="Direkte grunnlag for næringshjelp på 35%."/>
+      </Acc>
 
-    <Sec title="3. Bør stabilisatorer være automatiske?" icon="⚡">
-      <RC source="Blanchard (NBER)" year="2025" type="support" finding="Gitt pengepolitikkens begrensninger bør finanspolitikken spille større rolle gjennom quasi-automatiske stabilisatorer." impl="Direkte faglig autorisasjon for konseptet."/>
-      <RC source="GAO" year="2025" type="support" finding="Effektive stabilisatorer er tidsriktige, midlertidige, målrettede og forutsigbare. Triggerdesign er utfordrende." impl="Fire prinsipper som vår modell oppfyller. To-trinns trigger adresserer designutfordringen."/>
-      <RC source="Consensus / James et al." year="2022" type="nuance" finding="Empirisk evidens for optimale triggerterskler er sparsom. Stabiliseringsfond bør respondere på store, forbigående prisavvik, ikke normal volatilitet." impl="Bekrefter at vår sjokk-trigger opererer i et forskningsgap. To-trinns med faglig filter er designsvaret."/>
-    </Sec>
+      <Acc title="🎯 Hva fungerer best — og for hvem?">
+        <RC source="IMF / Arregui et al." year="2022" type="support" finding="Full kompensasjon av de nederste 20%: 0,4% av BNP. De nederste 40%: 0,9% av BNP. Brede prisundertrykkende tiltak er lite treffsikre." impl="Kalibreringspunkt for husholdningsstøtte og kvartalstak 0,5% BNP."/>
+        <RC source="Spanias erfaring" year="2022–23" type="support" finding="Husleietak på 2%, mva-kutt på mat, målrettede overføringer. Inflasjon falt raskere enn eurosonen." impl="Empirisk grunnlag for husleietak-mekanismen."/>
+        <RC source="Consensus / James et al." year="2022" type="support" finding="Land med stabiliseringsfond har ~13% lavere utgiftsvolatilitet. Men blandede effekter der regler er svake." impl="Kvantitativt ankerpunkt for Sjokkfond-konseptet. Forsterker argumentet for strenge regler."/>
+      </Acc>
 
-    <Sec title="4. Tilbud vs. etterspørsel — kan vi skille?" icon="🔍">
-      <RC source="Bernanke & Blanchard" year="2025" type="support" finding="Pandemisk inflasjon primært drevet av prissjokk. Replisert i 11 økonomier." impl="Faglig fundament for sjokk-differensiering."/>
-      <RC source="Cassinis et al. (ECB)" year="2025" type="challenge" finding="Inflasjonsdriverne skifter over tid. Kan fanges i sanntid gjennom finansmarkedsdata." impl="Fagrådets mandat må inkludere kvartalsvis revurdering."/>
-    </Sec>
+      <Acc title="⚡ Bør stabilisatorer være automatiske?">
+        <RC source="Blanchard (NBER)" year="2025" type="support" finding="Gitt pengepolitikkens begrensninger bør finanspolitikken spille større rolle gjennom quasi-automatiske stabilisatorer." impl="Direkte faglig autorisasjon for konseptet."/>
+        <RC source="GAO" year="2025" type="support" finding="Effektive stabilisatorer er tidsriktige, midlertidige, målrettede og forutsigbare. Triggerdesign er utfordrende." impl="Fire prinsipper som vår modell oppfyller. To-trinns trigger adresserer designutfordringen."/>
+        <RC source="Consensus / James et al." year="2022" type="nuance" finding="Empirisk evidens for optimale triggerterskler er sparsom. Stabiliseringsfond bør respondere på store, forbigående prisavvik, ikke normal volatilitet." impl="Bekrefter at vår sjokk-trigger opererer i et forskningsgap. To-trinns med faglig filter er designsvaret."/>
+      </Acc>
 
-    <Sec title="5. Markedsmakt og inflasjonsforsterkning" icon="🏪">
-      <P>Forskning viser at konsentrerte markeder ikke bare overfører kostnadssjokk — de kan forsterke dem.</P>
-      <RC source="Weber & Wasner" year="2023" type="support" finding="«Sellers' inflation»: Bedrifter med markedsmakt bruker kostnadssjokk som dekke for koordinerte prisøkninger som overstiger faktisk kostnadsøkning. Profittandelen av inflasjonen var uvanlig høy i 2021–2023." impl="Grunnlag for parallell pristransparens. Sjokkfondet behandler symptomet — sellers' inflation er en del av årsaken."/>
-      <RC source="Europaparlamentet / Weber et al." year="2024" type="support" finding="EU har et «inflation governance gap» — mangler verktøy for å håndtere prissjokk i «systemisk signifikante sektorer» (energi, mat, bolig)." impl="Norges dagligvaremarked (95% konsentrasjon) er et lærebokeksempel. Parallell overvåkning fyller dette gapet."/>
-      <RC source="Consensus / Weber & Wasner" year="2023" type="support" finding="Komplementære tiltak som prisbegrensningsregler og windfall-skatter demper sellers' inflation-impulsen." impl="Sjokkfondets parallelle pristransparens er konsistent med denne anbefalingen."/>
-    </Sec>
+      <Acc title="🔍 Kan vi skille tilbudssjokk fra overforbruk?">
+        <RC source="Bernanke & Blanchard" year="2025" type="support" finding="Pandemisk inflasjon primært drevet av prissjokk. Replisert i 11 økonomier." impl="Faglig fundament for sjokk-differensiering."/>
+        <RC source="Cassinis et al. (ECB)" year="2025" type="challenge" finding="Inflasjonsdriverne skifter over tid. Kan fanges i sanntid gjennom finansmarkedsdata." impl="Fagrådets mandat må inkludere kvartalsvis revurdering."/>
+      </Acc>
 
-    <Sec title="Norges særstilling" icon="🇳🇴" accent={C.accent+"66"}>
-      <P style={{color:C.accent,fontWeight:600}}>Nesten all forskning gjelder energi-importører. Modellen er en syntese av to velutforskede strømmer anvendt på en unik kontekst.</P>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:8}}>
-        <div style={{background:C.bg,borderRadius:9,padding:"12px 14px",border:`1px solid ${C.greenL}33`}}>
-          <P style={{fontSize:12,fontWeight:600,color:C.greenL,margin:"0 0 5px"}}>Hva posisjonen endrer:</P>
-          <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Finansiering er trivielt — merinntektene dekker kompensasjonen</P>
-          <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Sterkere legitimitet — direkte kausal kobling sjokk↔merinntekt↔kompensasjon</P>
-          <P style={{fontSize:11.5,margin:0}}>• Windfall-skatt innebygd i petroleumsskattesystemet</P>
+      <Acc title="🏪 Forsterker markedsmakt prissjokk?">
+        <RC source="Weber & Wasner" year="2023" type="support" finding="«Sellers' inflation»: Bedrifter med markedsmakt bruker kostnadssjokk som dekke for koordinerte prisøkninger som overstiger faktisk kostnadsøkning. Profittandelen av inflasjonen var uvanlig høy i 2021–2023." impl="Grunnlag for parallell pristransparens. Sjokkfondet behandler symptomet — sellers' inflation er en del av årsaken."/>
+        <RC source="Europaparlamentet / Weber et al." year="2024" type="support" finding="EU har et «inflation governance gap» — mangler verktøy for å håndtere prissjokk i «systemisk signifikante sektorer» (energi, mat, bolig)." impl="Norges dagligvaremarked (95% konsentrasjon) er et lærebokeksempel. Parallell overvåkning fyller dette gapet."/>
+        <RC source="Consensus / Weber & Wasner" year="2023" type="support" finding="Komplementære tiltak som prisbegrensningsregler og windfall-skatter demper sellers' inflation-impulsen." impl="Sjokkfondets parallelle pristransparens er konsistent med denne anbefalingen."/>
+      </Acc>
+
+      <Acc title="🇳🇴 Norges særstilling — hva forskningen ikke dekker">
+        <P style={{color:C.accent,fontWeight:600}}>Nesten all forskning gjelder energi-importører. Modellen er en syntese av to velutforskede strømmer anvendt på en unik kontekst.</P>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:8}}>
+          <div style={{background:C.bg,borderRadius:9,padding:"12px 14px",border:`1px solid ${C.greenL}33`}}>
+            <P style={{fontSize:12,fontWeight:600,color:C.greenL,margin:"0 0 5px"}}>Hva posisjonen endrer:</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Finansiering er trivielt — merinntektene dekker kompensasjonen</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Sterkere legitimitet — direkte kausal kobling sjokk↔merinntekt↔kompensasjon</P>
+            <P style={{fontSize:11.5,margin:0}}>• Windfall-skatt innebygd i petroleumsskattesystemet</P>
+          </div>
+          <div style={{background:C.bg,borderRadius:9,padding:"12px 14px",border:`1px solid ${C.redL}33`}}>
+            <P style={{fontSize:12,fontWeight:600,color:C.redL,margin:"0 0 5px"}}>Hva den ikke endrer:</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Etterspørselseffekten er identisk (pengenes opphav ≠ makroimpuls)</P>
+            <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Forventningskanalen gjelder fullt ut</P>
+            <P style={{fontSize:11.5,margin:0}}>• Risiko for overgenøsitet er forstørret pga. enorme merinntekter</P>
+          </div>
         </div>
-        <div style={{background:C.bg,borderRadius:9,padding:"12px 14px",border:`1px solid ${C.redL}33`}}>
-          <P style={{fontSize:12,fontWeight:600,color:C.redL,margin:"0 0 5px"}}>Hva den ikke endrer:</P>
-          <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Etterspørselseffekten er identisk (pengenes opphav ≠ makroimpuls)</P>
-          <P style={{fontSize:11.5,margin:"0 0 4px"}}>• Forventningskanalen gjelder fullt ut</P>
-          <P style={{fontSize:11.5,margin:0}}>• Risiko for overgenøsitet er forstørret pga. enorme merinntekter</P>
-        </div>
-      </div>
+      </Acc>
     </Sec>
 
 
