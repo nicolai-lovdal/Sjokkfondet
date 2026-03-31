@@ -154,9 +154,15 @@ const FlowSVG = ({stage,score}) => {
       {x:590,l:"Næringshjelp (35%)",c:C.accent,on:full||deact},
     ].map((ch,i)=>{
       const op=ch.on?1:0.35;
+      const fx=290+(i-1)*60, fy=190, tx=ch.x, ty=232;
+      const dx=tx-fx, dy=ty-fy, len=Math.sqrt(dx*dx+dy*dy);
+      const nx=dx/len, ny=dy/len, px=-ny, py=nx;
+      const ax=tx, ay=ty;
+      const bx1=tx-nx*9+px*4.5, by1=ty-ny*9+py*4.5;
+      const bx2=tx-nx*9-px*4.5, by2=ty-ny*9-py*4.5;
       return <g key={i}>
-        <line x1={290+(i-1)*60} y1={190} x2={ch.x} y2={232} stroke={ch.on?ch.c:C.border} strokeWidth={ch.on?1.5:1} opacity={op} strokeDasharray={ch.on?"none":"4 3"}/>
-        {ch.on&&<polygon points={`${ch.x},232 ${ch.x-4},226 ${ch.x+4},226`} fill={ch.c}/>}
+        <line x1={fx} y1={fy} x2={tx} y2={ty} stroke={ch.on?ch.c:C.border} strokeWidth={ch.on?1.5:1} opacity={op} strokeDasharray={ch.on?"none":"4 3"}/>
+        {ch.on&&<polygon points={`${ax},${ay} ${bx1},${by1} ${bx2},${by2}`} fill={ch.c}/>}
         <rect x={ch.x-68} y={234} width={136} height={42} rx={8} fill={ch.on?C.cardAlt:C.card} stroke={ch.on?ch.c:C.border} strokeWidth={ch.on?1.5:1} opacity={op}/>
         <text x={ch.x} y={252} textAnchor="middle" fill={C.tx} fontSize={10} fontWeight={600} fontFamily={F.u} opacity={op}>{ch.l}</text>
         <text x={ch.x} y={265} textAnchor="middle" fill={C.txM} fontSize={9} fontFamily={F.u} opacity={op}>{ch.on?"● Aktiv":"○ Inaktiv"}</text>
@@ -185,13 +191,6 @@ const FlowSVG = ({stage,score}) => {
       {{inactive:"INAKTIV",auto:"AKUTTRESPONS",full:"FULL MOBILISERING",deactivating:"NEDTRAPPING",post:"GRØNN FASE"}[stage]}
     </text>
 
-    {/* Husleietak indicator */}
-    {(act)&&<>
-      <line x1={70} y1={179} x2={70} y2={192} stroke={C.yellowDim+"66"} strokeWidth={1} strokeDasharray="3 2"/>
-      <rect x={20} y={192} width={100} height={34} rx={7} fill={C.bg} stroke={C.yellowDim+"66"} strokeWidth={1}/>
-      <text x={70} y={206} textAnchor="middle" fill={C.yellowDim} fontSize={9} fontWeight={600} fontFamily={F.u}>Husleietak</text>
-      <text x={70} y={218} textAnchor="middle" fill={C.txM} fontSize={8.5} fontFamily={F.u}>Maks 2%/år</text>
-    </>}
   </svg></div>;
 };
 
